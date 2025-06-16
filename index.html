@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="UTF-8">
+
+        <title>Clock-Out Time Calculator</title>
+
+    </head>
+
+    <body>
+
+        <h2>Clock-Out Time Calculator</h2>
+
+        <label>Clock In Time: <input type="time" id="clockIn" value="07:25"></label><br>
+
+        <label>Lunch Start Time: <input type="time" id="lunchStart" value="12:23"></label><br>
+
+        <label>Lunch End Time: <input type="time" id="lunchEnd" value="13:04"></label><br>
+
+        <label>Start Time Deduction (minutes): <input type="number" id="deduction" value="5"></label><br>
+
+        <label>Total Work Hours: <input type="number" id="workHours" value="8"></label><br><br>
+
+        <button onclick="calculateClockOut()">Calculate Clock-Out Time</button>
+
+ 
+
+        <h3 id="result"></h3>
+
+ 
+
+        <script>
+
+            function parseTime24(timeStr) {
+
+                const [hours, minutes] = timeStr.split(':').map(Number);
+
+                return new Date(1970, 0, 1, hours, minutes, 0);
+
+            }
+
+ 
+
+            function formatTime(date) {
+
+                let hours = date.getHours();
+
+                const minutes = date.getMinutes();
+
+                const seconds = date.getSeconds();
+
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+
+                hours = hours % 12 || 12;
+
+                return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} ${ampm}`;
+
+            }
+
+ 
+
+            function calculateClockOut() {
+
+                const clockIn = parseTime24(document.getElementById('clockIn').value);
+
+                const lunchStart = parseTime24(document.getElementById('lunchStart').value);
+
+                const lunchEnd = parseTime24(document.getElementById('lunchEnd').value);
+
+                const deduction = parseInt(document.getElementById('deduction').value, 10);
+
+                const workHours = parseFloat(document.getElementById('workHours').value);
+
+ 
+
+                const workBeforeLunch = lunchStart - clockIn;
+
+                const totalWork = workHours * 60 * 60 * 1000;
+
+                const remainingWork = totalWork - workBeforeLunch;
+
+                const deductionMs = deduction * 60 * 1000;
+
+ 
+
+                const clockOut = new Date(lunchEnd.getTime() + remainingWork - deductionMs);
+
+ 
+
+                document.getElementById('result').textContent = `You should clock out at ${formatTime(clockOut)} to complete ${workHours} hours of work.`;
+
+            }
+
+        </script>
+
+    </body>
+
+</html>
